@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Map with Routing</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        /* Modern theme for map page */
+        body {
+            background: #232526 !important;
+            color: #fff;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Card-like containers above the map */
+        .warehouse-form,
+        .warehouse-list,
+        .delivery-location-form {
+            background: linear-gradient(135deg, #7b2ff2 0%, #f357a8 100%);
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(123, 47, 242, 0.15);
+            padding: 1.2rem 2rem;
+            margin: 1.5rem auto;
+            max-width: 600px;
+            color: #fff;
+            transition: box-shadow 0.3s, transform 0.2s;
+        }
+
+        /* Gradient shadow on hover */
+        .warehouse-form:hover,
+        .warehouse-list:hover,
+        .delivery-location-form:hover {
+            box-shadow:
+                0 8px 32px 0 rgba(123, 47, 242, 0.25),
+                0 0 24px 4px #f357a8;
+            transform: translateY(-5px) scale(1.03);
+        }
+
+        /* Main heading card: no hover effect */
+        .card {
+            background: linear-gradient(135deg, #7b2ff2 0%, #f357a8 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.10);
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            padding: 1.2rem 2.5rem;
+            border: none;
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 2rem;
+            color: #fffbe6;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        #map {
+            height: 80vh;
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(54, 209, 196, 0.10);
+            margin-bottom: 2rem;
+            border: 2px solid #23272b;
+        }
+
+        .warehouse-form,
+        .warehouse-list,
+        .delivery-location-form {
+            background: #232526;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(54, 209, 196, 0.08);
+            padding: 1.2rem 2rem;
+            margin: 1.5rem auto;
+            max-width: 600px;
+        }
+
+        .delivery-location-form {
+            text-align: center;
+        }
+
+        input[type="text"] {
+            background: #232526;
+            border: 1px solid #7b2ff2;
+            color: #fff;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border: 1.5px solid #ffd700;
+        }
+
+        button,
+        select {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-top: 0.3rem;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px rgba(123, 47, 242, 0.10);
+        }
+
+        button:hover,
+        select:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%);
+            color: #ffd6fa;
+            cursor: pointer;
+        }
+
+        .add-instruction,
+        #deliveryLocationDisplay {
+            color: #7b2ff2;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .warehouse-list ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .warehouse-list li {
+            margin-bottom: 8px;
+            background: #282c34;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #ffd700;
+            font-size: 1rem;
+        }
+
+        nav {
+            background: #232526;
+            padding: 0.5rem 0;
+            margin-bottom: 1rem;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 2px 8px rgba(123, 47, 242, 0.10);
+        }
+
+        .navbar-nav {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0 1rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #ffd700;
+        }
+
+        /* Card hover animation for all cards except the main heading card */
+        .warehouse-form,
+        .warehouse-list,
+        .delivery-location-form {
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .warehouse-form:hover,
+        .warehouse-list:hover,
+        .delivery-location-form:hover {
+            box-shadow: 0 8px 32px rgba(123, 47, 242, 0.18);
+            transform: translateY(-5px) scale(1.03);
+        }
+
+        /* Do NOT add hover to the main heading card */
+
+        @media (max-width: 700px) {
+
+            .warehouse-form,
+            .warehouse-list,
+            .delivery-location-form {
+                padding: 1rem;
+                max-width: 98vw;
+            }
+
+            #map {
+                height: 60vh;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+
+        .leaflet-routing-container {
+            background: #232526 !important;
+            color: #fff !important;
+            border-radius: 12px;
+            border: 1px solid #7b2ff2;
+        }
+
+        .leaflet-routing-container .leaflet-routing-alt {
+            background: #232526 !important;
+            color: #fff !important;
+        }
+
+        .leaflet-routing-container table {
+            background: #232526 !important;
+            color: #fff !important;
+        }
+
+        .leaflet-routing-container tr,
+        .leaflet-routing-container td {
+            background: #232526 !important;
+            color: #fff !important;
+        }
+
+        /* Hide the start/end input boxes in the directions panel */
+        .leaflet-routing-container .leaflet-routing-geocoders,
+        .leaflet-routing-container .leaflet-routing-add-waypoint {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body style="display: flex; flex-direction: column; align-items: center;">
+    <div class="card"
+        style="background: linear-gradient(135deg, #7b2ff2 0%, #f357a8 100%); border-radius: 18px; box-shadow: 0 4px 24px rgba(123,47,242,0.10); margin-top: 2rem; margin-bottom: 1.5rem; padding: 1.2rem 2.5rem; border: none; text-align: center;">
+        <h1 style="color: #fffbe6; margin: 0; font-weight: 700; letter-spacing: 1px;">Road Map with Routing</h1>
+    </div>
+    <div class="warehouse-form">
+        <div class="add-instruction" id="addInstruction">Enter warehouse name and location, then click "Add Warehouse".</div>
+        <form id="addWarehouseForm" autocomplete="off">
+            <input type="text" id="warehouseName" placeholder="Warehouse Name" required>
+            <input type="text" id="warehouseLocation" placeholder="Location (place name)" required style="margin-top:8px;">
+            <button type="submit" id="addWarehouseBtn" style="margin-top:8px;">Add Warehouse</button>
+        </form>
+        <div id="warehouseErrorMsg" style="color:#ff4d4f; margin-top:5px; font-weight:500;"></div>
+    </div>
+    <div class="warehouse-list">
+        <strong>Warehouses:</strong>
+        <select id="warehouseSelect">
+            <option value="">-- Select Warehouse --</option>
+        </select>
+        <button id="deleteWarehouseBtn" disabled>Delete Selected Warehouse</button>
+        <ul id="warehouseList"></ul>
+    </div>
+    <div class="delivery-location-form" style="margin: 20px 0;">
+        <strong>Delivery Location:</strong>
+        <button id="startSelectDelivery" type="button">Select Delivery Location on Map</button>
+        <span id="deliveryLocationDisplay" style="margin-left:10px;color:#007bff;"></span>
+        <button id="clearDeliveryLocation" type="button" style="display:none;">Clear</button>
+        <div style="margin-top:10px;">
+            <input type="text" id="searchPlaceInput" placeholder="Search place by name" style="width:220px;max-width:90%;">
+            <button id="searchPlaceBtn" type="button">Search</button>
+        </div>
+        <div id="searchErrorMsg" style="color:#ff4d4f; margin-top:5px; font-weight:500;"></div>
+    </div>
+    <div id="deliveryLocationInstruction" style="color:#ffd700; text-align:center; margin-bottom:20px; display:none;">
+        Click on the map to set delivery location.
+    </div>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script>
+        // Initialize the map centered on India
+        var map = L.map('map').setView([20.5937, 78.9629], 5);
+
+        // Set up the OpenStreetMap tiles (road map)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Warehouses array and markers
+        var warehouses = [];
+        var warehouseMarkers = [];
+        var addingWarehouse = false;
+        var pendingWarehouseName = "";
+
+        // Delivery location variables
+        var deliveryLocation = null;
+        var deliveryMarker = null;
+        var selectingDelivery = false;
+
+        // Render warehouses on map, in list, and in select dropdown
+        function renderWarehouses() {
+            // Remove old markers
+            warehouseMarkers.forEach(marker => map.removeLayer(marker));
+            warehouseMarkers = [];
+
+            // Add new markers
+            warehouses.forEach((warehouse, idx) => {
+                var marker = L.marker(warehouse.location).addTo(map).bindPopup(`<b>${warehouse.name}</b>`);
+                warehouseMarkers.push(marker);
+            });
+
+            // Render warehouse list
+            const list = document.getElementById('warehouseList');
+            list.innerHTML = '';
+            warehouses.forEach((warehouse, idx) => {
+                const li = document.createElement('li');
+                li.textContent = `${warehouse.name} (${warehouse.location[0].toFixed(5)}, ${warehouse.location[1].toFixed(5)})`;
+                list.appendChild(li);
+            });
+
+            // Render select dropdown
+            const select = document.getElementById('warehouseSelect');
+            select.innerHTML = '<option value="">-- Select Warehouse --</option>';
+            warehouses.forEach((warehouse, idx) => {
+                const option = document.createElement('option');
+                option.value = idx;
+                option.textContent = warehouse.name;
+                select.appendChild(option);
+            });
+
+            // Disable delete button if nothing selected
+            document.getElementById('deleteWarehouseBtn').disabled = !select.value;
+        }
+
+        // Remove old add warehouse logic
+        // Add new: Add warehouse by searching location and saving to backend
+
+        document.getElementById('addWarehouseForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('warehouseName').value.trim();
+            const locationName = document.getElementById('warehouseLocation').value.trim();
+            const errorMsg = document.getElementById('warehouseErrorMsg');
+            errorMsg.textContent = "";
+            if (!name || !locationName) {
+                errorMsg.textContent = "Please enter both warehouse name and location.";
+                return;
+            }
+            // Geocode the location name
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName)}`)
+                .then(res => res.json())
+                .then(results => {
+                    if (!results || results.length === 0) {
+                        errorMsg.textContent = "Location not found on map. Please try another name.";
+                        return;
+                    }
+                    const loc = results[0];
+                    const lat = parseFloat(loc.lat);
+                    const lon = parseFloat(loc.lon);
+                    // Add warehouse to backend
+                    const warehouseObj = { name: name, location: [lat, lon] };
+                    fetch('http://127.0.0.1:5000/api/warehouses', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(warehouseObj)
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Failed to add warehouse');
+                        return res.json();
+                    })
+                    .then(() => {
+                        fetchWarehouses();
+                        document.getElementById('addWarehouseForm').reset();
+                        errorMsg.textContent = "";
+                        document.getElementById('addInstruction').textContent = "Enter warehouse name and location, then click \"Add Warehouse\".";
+                    })
+                    .catch(() => {
+                        errorMsg.textContent = "Failed to add warehouse. Please try again.";
+                    });
+                })
+                .catch(() => {
+                    errorMsg.textContent = "Error searching for location. Please try again.";
+                });
+        });
+
+        // Combine map click handler for warehouse adding, delivery location, and routing
+        map.on('click', function (e) {
+            // Only handle delivery location and routing, not warehouse adding
+            if (selectingDelivery) {
+                deliveryLocation = [e.latlng.lat, e.latlng.lng];
+                if (deliveryMarker) map.removeLayer(deliveryMarker);
+                deliveryMarker = L.marker(e.latlng, { icon: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [32, 32], iconAnchor: [16, 32] }) })
+                    .addTo(map)
+                    .bindPopup("Delivery Location")
+                    .openPopup();
+                document.getElementById('deliveryLocationDisplay').textContent = `(${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)})`;
+                document.getElementById('clearDeliveryLocation').style.display = "";
+                selectingDelivery = false;
+                document.getElementById('deliveryLocationInstruction').style.display = "none";
+                return;
+            }
+
+            // Routing only if delivery location is set and not adding warehouse
+            if (deliveryLocation) {
+                var nearestWarehouse = findNearestWarehouse(L.latLng(deliveryLocation));
+                if (nearestWarehouse) {
+                    control.spliceWaypoints(0, 1, nearestWarehouse.location);
+                }
+                control.spliceWaypoints(control.getWaypoints().length - 1, 1, deliveryLocation);
+
+                fetch('/calculate_path', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        warehouse_location: nearestWarehouse.location, // [lat, lng] of selected warehouse
+                        delivery_location: deliveryLocation           // [lat, lng] of delivery location
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (Array.isArray(data) && data.length > 0) {
+                            var pathLatLng = data.map(point => [point[0], point[1]]);
+                            control.setWaypoints(pathLatLng);
+                        } else {
+                            alert('No path found!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // alert('Error calculating the path!'); // <-- Remove or comment out this line
+                    });
+            }
+        });
+
+        // Select warehouse dropdown change
+        document.getElementById('warehouseSelect').addEventListener('change', function () {
+            document.getElementById('deleteWarehouseBtn').disabled = !this.value;
+        });
+
+        // Delete warehouse button
+        document.getElementById('deleteWarehouseBtn').addEventListener('click', function () {
+            const idx = document.getElementById('warehouseSelect').value;
+            if (idx !== "") {
+                const warehouse = warehouses[idx];
+                fetch('http://127.0.0.1:5000/api/warehouses', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: warehouse.id })
+                })
+                .then(() => {
+                    fetchWarehouses();
+                    document.getElementById('warehouseSelect').value = "";
+                });
+            }
+        });
+
+        // Fetch warehouses from backend API and render on map
+        function fetchWarehouses() {
+            fetch('http://127.0.0.1:5000/api/warehouses')
+                .then(res => res.json())
+                .then(data => {
+                    warehouses = data;
+                    renderWarehouses();
+                });
+        }
+
+        // Initial render: fetch warehouses from backend
+        fetchWarehouses();
+
+        // Routing control
+        var control = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim()
+        }).addTo(map);
+
+        // Find nearest warehouse
+        function findNearestWarehouse(customerLocation) {
+            let minDistance = Infinity;
+            let nearestWarehouse = null;
+            warehouses.forEach(function (warehouse) {
+                const warehouseLatLng = L.latLng(warehouse.location);
+                const distance = customerLocation.distanceTo(warehouseLatLng);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestWarehouse = warehouse;
+                }
+            });
+            return nearestWarehouse;
+        }
+
+        // --- Place Search Feature ---
+        document.getElementById('searchPlaceBtn').addEventListener('click', function () {
+            const place = document.getElementById('searchPlaceInput').value.trim();
+            const errorMsg = document.getElementById('searchErrorMsg');
+            errorMsg.textContent = "";
+            if (!place) {
+                errorMsg.textContent = "Please enter a place name.";
+                return;
+            }
+            // Use Nominatim API for geocoding
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`)
+                .then(res => res.json())
+                .then(results => {
+                    if (!results || results.length === 0) {
+                        errorMsg.textContent = "Location not found. Please try another name.";
+                        return;
+                    }
+                    // Use the first result
+                    const loc = results[0];
+                    const lat = parseFloat(loc.lat);
+                    const lon = parseFloat(loc.lon);
+                    // Set as delivery location
+                    deliveryLocation = [lat, lon];
+                    if (deliveryMarker) map.removeLayer(deliveryMarker);
+                    deliveryMarker = L.marker([lat, lon], { icon: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [32, 32], iconAnchor: [16, 32] }) })
+                        .addTo(map)
+                        .bindPopup("Delivery Location")
+                        .openPopup();
+                    document.getElementById('deliveryLocationDisplay').textContent = `(${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+                    document.getElementById('clearDeliveryLocation').style.display = "";
+                    
+                    // ...existing code...
+                    var nearestWarehouse = findNearestWarehouse(L.latLng(lat, lon));
+                    if (nearestWarehouse) {
+                        control.spliceWaypoints(0, 1, nearestWarehouse.location);
+                    }
+                    control.spliceWaypoints(control.getWaypoints().length - 1, 1, [lat, lon]);
+                })
+                .catch(() => {
+                    errorMsg.textContent = "Error searching for location. Please try again.";
+                });
+        });
+    </script>
+
+    <!-- Navigation bar (for the link) -->
+    <nav>
+        <ul class="navbar-nav">
+            <!-- Other nav items -->
+            <li class="nav-item">
+                <a class="nav-link" href="delivery_route_map.html">Delivery Route Map</a>
+            </li>
+        </ul>
+    </nav>
+</body>
+
+</html>

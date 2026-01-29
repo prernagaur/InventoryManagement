@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        body {
+            background: #232526 !important;
+            color: #fff;
+        }
+
+        .navbar-info,
+        .bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+        }
+
+        .navbar .nav-link,
+        .navbar-brand {
+            color: #fff !important;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar-brand:hover {
+            color: #ffd6fa !important;
+        }
+
+        .form-container {
+            background: #232526 !important;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
+        }
+
+        .form-container:hover {
+            box-shadow:
+                0 8px 32px 0 rgba(123, 47, 242, 0.18),
+                0 0 16px 4px #f357a87a;
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        .card,
+        .table.bg-white {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header.bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            color: #fff !important;
+            border-radius: 18px 18px 0 0;
+        }
+
+        .btn-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa !important;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa !important;
+        }
+
+        .btn-danger {
+            background: #d7263d !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-danger:hover {
+            background: #a71d2a !important;
+            color: #ffd6fa !important;
+        }
+
+        .table.bg-white th,
+        .table.bg-white td {
+            color: #fff !important;
+            background: transparent !important;
+        }
+
+        h4,
+        h3 {
+            color: #fff !important;
+        }
+
+        .fas,
+        .fa {
+            color: #f357a8;
+        }
+
+        /* Apply this CSS to staff.html for a seamless gradient table header */
+        .table.bg-white {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%) !important;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+            color: #fff !important;
+            border: none;
+        }
+
+        .table.bg-white thead.bg-info tr {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+        }
+
+        .table.bg-white thead.bg-info th {
+            background: transparent !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+
+    <title>Staff Page</title>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-info bg-info mb-4">
+        <div class="container">
+            <a class="navbar-brand text-white" href="index.html">Dashboard</a>
+            <span class="navbar-text text-white ml-2">Staff Management</span>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+        <a href="index.html" class="btn btn-info mb-3 ml-3"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Staff Form -->
+            <div class="col-md-4">
+                <div class="form-container border p-3">
+                    <h4>Add Staff Member</h4>
+                    <hr>
+                    <form id="staffForm">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department" class="form-control" required>
+                                <option value="">Select Department</option>
+                                <option>Electronics</option>
+                                <option>Technical Support</option>
+                                <option>Hardware</option>
+                                <option>Software</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">Add Staff</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Staff Table -->
+            <div class="col-md-8">
+                <div class="card"
+                    style="background: linear-gradient(135deg, #7b2ff2 0%, #f357a8 100%); border-radius: 18px; box-shadow: 0 4px 24px rgba(123,47,242,0.15); color: #fff; border: none; overflow: hidden;">
+                    <div class="card-body p-0">
+                        <table class="table bg-white mb-0">
+                            <thead class="bg-info">
+                                <tr class="text-white">
+                                    <th scope="col">#</th>
+                                    <th scope="col">First</th>
+                                    <th scope="col">Last</th>
+                                    <th scope="col">Department</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody">
+                                <!-- Staff data will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let staffMembers = JSON.parse(localStorage.getItem('staffMembers')) || [];
+        localStorage.setItem('staffMembers', JSON.stringify(staffMembers));
+
+        function renderStaffTable() {
+            const tableBody = document.getElementById('staffTableBody');
+            tableBody.innerHTML = '';
+            staffMembers.forEach((staff, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+        <th scope="row">${index + 1}</th>
+        <td>${staff.firstName}</td>
+        <td>${staff.lastName}</td>
+        <td>${staff.department}</td>
+        <td>
+          <button class="btn btn-info btn-sm" onclick="viewStaff(${staff.id})">View</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStaff(${staff.id})">Delete</button>
+        </td>
+      `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        document.getElementById('staffForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const newStaff = {
+                id: staffMembers.length > 0 ? Math.max(...staffMembers.map(s => s.id)) + 1 : 1,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                department: document.getElementById('department').value
+            };
+            staffMembers.push(newStaff);
+            renderStaffTable();
+            this.reset();
+        });
+
+        function deleteStaff(id) {
+            if (confirm('Are you sure you want to delete this staff member?')) {
+                staffMembers = staffMembers.filter(staff => staff.id !== id);
+                renderStaffTable();
+            }
+        }
+
+        function viewStaff(id) {
+            const staff = staffMembers.find(s => s.id === id);
+            alert(`Viewing: ${staff.firstName} ${staff.lastName} (${staff.department})`);
+        }
+
+        document.addEventListener('DOMContentLoaded', renderStaffTable);
+    </script>
+
+</body>
+
+</html>

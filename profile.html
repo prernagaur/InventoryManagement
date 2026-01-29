@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
+    <!--FontAwesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"
+        integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+
+    <!--Chartjs CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+    <!--Custome CSS-->
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            background: #fff !important;
+            color: #fff;
+        }
+
+        .navbar-info,
+        .bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+        }
+
+        .navbar .nav-link,
+        .navbar-brand {
+            color: #fff !important;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar-brand:hover {
+            color: #ffd6fa !important;
+        }
+
+        .card,
+        .table.bg-white {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header.bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            color: #fff !important;
+            border-radius: 18px 18px 0 0;
+        }
+
+        .btn-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa !important;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa !important;
+        }
+
+        .btn-danger {
+            background: #d7263d !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-danger:hover {
+            background: #a71d2a !important;
+            color: #ffd6fa !important;
+        }
+
+        h4,
+        h3 {
+            color: #fff !important;
+        }
+
+        .fas,
+        .fa {
+            color: #f357a8;
+        }
+    </style>
+
+    <title>Profile Page</title>
+</head>
+
+<body>
+
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-info bg-info">
+        <div class="container">
+            <a class="navbar-brand text-white" href="index.html">My Inventory</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" href="index.html">Dashboard <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" href="profile.html">Admin Profile <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Logout</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <!--End Navbar-->
+
+
+
+    <!--Table-->
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-md-4">
+
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        Profile Page
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="h4"> Profile Information</span>
+                                <button id="editBtn" class="btn btn-info btn-sm float-right">Edit</button>
+                                <button id="saveBtn" class="btn btn-success btn-sm float-right mr-2"
+                                    style="display:none;">Save</button>
+                                <hr>
+                                <!-- View Mode -->
+                                <table id="profileTable" class="table bg-white table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">Name</th>
+                                            <td id="profileName">Mark</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Email</th>
+                                            <td id="profileEmail">mark123@gmail.com</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Phone</th>
+                                            <td id="profilePhone">00992283833</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Address</th>
+                                            <td id="profileAddress">House Number 22 Dr. Ababio Street Ghana</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Edit Mode -->
+                                <form id="profileForm" style="display:none;">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" id="inputName" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" id="inputEmail" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone</label>
+                                        <input type="text" id="inputPhone" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <input type="text" id="inputAddress" class="form-control" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-4">
+                                <img class="img-thumbnail" src="./media/profile-img1.jpg" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!--End Table-->
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    -->
+
+    <script>
+        // Load profile data from localStorage or use blanks as defaults
+        let profile = JSON.parse(localStorage.getItem('profile')) || {
+            name: "",
+            email: "",
+            phone: "",
+            address: ""
+        };
+
+        function renderProfile() {
+            document.getElementById('profileName').textContent = profile.name;
+            document.getElementById('profileEmail').textContent = profile.email;
+            document.getElementById('profilePhone').textContent = profile.phone;
+            document.getElementById('profileAddress').textContent = profile.address;
+        }
+
+        function fillForm() {
+            document.getElementById('inputName').value = profile.name;
+            document.getElementById('inputEmail').value = profile.email;
+            document.getElementById('inputPhone').value = profile.phone;
+            document.getElementById('inputAddress').value = profile.address;
+        }
+
+        document.getElementById('editBtn').onclick = function () {
+            fillForm();
+            document.getElementById('profileTable').style.display = 'none';
+            document.getElementById('profileForm').style.display = '';
+            this.style.display = 'none';
+            document.getElementById('saveBtn').style.display = '';
+        };
+
+        document.getElementById('saveBtn').onclick = function () {
+            // Save changes
+            profile.name = document.getElementById('inputName').value;
+            profile.email = document.getElementById('inputEmail').value;
+            profile.phone = document.getElementById('inputPhone').value;
+            profile.address = document.getElementById('inputAddress').value;
+            localStorage.setItem('profile', JSON.stringify(profile));
+            renderProfile();
+            document.getElementById('profileTable').style.display = '';
+            document.getElementById('profileForm').style.display = 'none';
+            this.style.display = 'none';
+            document.getElementById('editBtn').style.display = '';
+        };
+
+        // Logout button logic
+        document.querySelector('a.nav-link[href="#"]').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Optionally clear localStorage or sessionStorage
+            // localStorage.clear();
+            // Redirect to login page (replace 'login.html' with your login page)
+            window.location.href = "index.html";
+        });
+
+        // On page load
+        renderProfile();
+    </script>
+</body>
+
+</html>

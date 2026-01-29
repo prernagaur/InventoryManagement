@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delivery Confirmation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background: #232526;
+            color: white;
+        }
+
+        .qr-container {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            border-radius: 18px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+        }
+
+        .items-list {
+            margin-top: 20px;
+        }
+
+        .item-card {
+            background: #282c34;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center qr-container">
+                <h2>Delivery Confirmation</h2>
+                <div id="deliveryInfo">
+                    <p>Scan the QR code to confirm delivery</p>
+                    <img id="qrCodeImage" src="" alt="QR Code" class="img-fluid mb-3" style="display:none;" />
+                    <div id="qrLoading" class="mb-3">Loading QR code...</div>
+                    <p>Or enter this code manually:</p>
+                    <h3 id="verificationCode" class="mb-4"></h3>
+
+                    <div id="itemsContainer" class="items-list" style="display: none;">
+                        <h4>Items to be delivered:</h4>
+                        <div id="itemsList"></div>
+
+                        <input type="text" id="manualCode" class="form-control mb-3"
+                            placeholder="Enter verification code to confirm" />
+
+                        <button id="confirmBtn" class="btn btn-success btn-block mt-2" disabled>
+                            Confirm Delivery
+                        </button>
+                    </div>
+                </div>
+
+                <div id="successMessage" style="display: none;">
+                    <div class="alert alert-success">
+                        Delivery confirmed successfully!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showQrCode(base64) {
+            const qrImg = document.getElementById("qrCodeImage");
+            qrImg.src = `data:image/png;base64,${base64}`;
+            qrImg.style.display = "block";
+            document.getElementById("qrLoading").style.display = "none";
+        }
+
+        function hideQrCode() {
+            document.getElementById("qrCodeImage").style.display = "none";
+            document.getElementById("qrLoading").style.display = "block";
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const deliveryId = urlParams.get("id");
+
+        const confirmBtn = document.getElementById("confirmBtn");
+        const manualInput = document.getElementById("manualCode");
+        let currentVerificationCode = "";
+
+        if (deliveryId) {
+            hideQrCode();
+            fetch(`/api/deliveries/${deliveryId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert("Invalid delivery code. Please place an order first.");
+                        window.location.href = "order.html";
+                        return;
+                    }
+
+                    if (data.status !== "pending") {
+                        alert("This delivery is already confirmed or expired.");
+                        window.location.href = "order.html";
+                        return;
+                    }
+
+                    showQrCode(data.qr_code);
+                    currentVerificationCode = data.verification_code.trim().toUpperCase();
+                    document.getElementById("verificationCode").textContent = currentVerificationCode;
+
+                    const itemsList = document.getElementById("itemsList");
+                    itemsList.innerHTML = "";
+                    data.items.forEach((item) => {
+                        const itemCard = document.createElement("div");
+                        itemCard.className = "item-card";
+                        itemCard.innerHTML = `<strong>${item.name}</strong><div>Quantity: ${item.quantity}</div>`;
+                        itemsList.appendChild(itemCard);
+                    });
+
+                    document.getElementById("itemsContainer").style.display = "block";
+                })
+                .catch(() => {
+                    hideQrCode();
+                    alert("Failed to load delivery data.");
+                    window.location.href = "order.html";
+                });
+        }
+
+        // Enable confirm only if input matches code
+        manualInput.addEventListener("input", () => {
+            const entered = manualInput.value.trim().toUpperCase();
+            confirmBtn.disabled = entered !== currentVerificationCode;
+        });
+
+        confirmBtn.addEventListener("click", () => {
+            const enteredCode = manualInput.value.trim().toUpperCase();
+
+            fetch(`/api/deliveries/${enteredCode}/confirm`, {
+                method: "POST",
+            }).then((response) => {
+                if (response.ok) {
+                    document.getElementById("deliveryInfo").style.display = "none";
+                    document.getElementById("successMessage").style.display = "block";
+                } else {
+                    alert("Failed to confirm delivery.");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Page</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            background: #232526 !important;
+            color: #fff;
+        }
+
+        .navbar-info,
+        .bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+        }
+
+        .navbar .nav-link,
+        .navbar-brand {
+            color: #fff !important;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar-brand:hover {
+            color: #ffd6fa !important;
+        }
+
+        .card,
+        .form-container {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header.bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            color: #fff !important;
+            border-radius: 18px 18px 0 0;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa !important;
+        }
+
+        .btn-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa !important;
+        }
+
+        .btn-danger {
+            background: #d7263d !important;
+            border: none;
+            color: #fff !important;
+        }
+
+        .btn-danger:hover {
+            background: #a71d2a !important;
+            color: #ffd6fa !important;
+        }
+
+        .table.bg-white {
+            background: #232526 !important;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(123, 47, 242, 0.15);
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .table.bg-white th,
+        .table.bg-white td {
+            color: #fff !important;
+            background: transparent !important;
+        }
+
+        h2.text-warning {
+            color: #7b2ff2 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-5">
+        <h2 class="text-center mb-4 text-warning"><i class="fas fa-truck"></i> Delivery Management</h2>
+        <form id="deliveryForm" class="form-container mb-4">
+            <div class="form-group">
+                <label for="deliveryAddress">Address</label>
+                <input type="text" class="form-control" id="deliveryAddress" required>
+            </div>
+            <div class="form-group">
+                <label for="deliveryDate">Delivery Date</label>
+                <input type="date" class="form-control" id="deliveryDate" required>
+            </div>
+            <div class="form-group">
+                <label for="deliveryStatus">Status</label>
+                <select id="deliveryStatus" class="form-control" required>
+                    <option value="">Choose...</option>
+                    <option>Pending</option>
+                    <option>In Transit</option>
+                    <option>Delivered</option>
+                    <option>Cancelled</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success btn-block">Add Delivery</button>
+        </form>
+
+        <table class="table bg-white">
+            <thead class="bg-info">
+                <tr class="text-white">
+                    <th scope="col">#</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="deliveryTableBody">
+                <!-- Delivery data will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="map" style="height: 400px;"></div>
+
+    <script>
+        var map = L.map('map').setView([20.5937, 78.9629], 5);
+
+        let deliveries = JSON.parse(localStorage.getItem('deliveries')) || [];
+        localStorage.setItem('deliveries', JSON.stringify(deliveries));
+
+        function renderDeliveryTable() {
+            const tableBody = document.getElementById('deliveryTableBody');
+            tableBody.innerHTML = '';
+            deliveries.forEach((delivery, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th scope="row">${index + 1}</th>
+                    <td>${delivery.address}</td>
+                    <td>${delivery.date}</td>
+                    <td>${delivery.status}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="editDelivery(${delivery.id})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteDelivery(${delivery.id})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        document.getElementById('deliveryForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const newDelivery = {
+                id: deliveries.length > 0 ? Math.max(...deliveries.map(d => d.id)) + 1 : 1,
+                address: document.getElementById('deliveryAddress').value,
+                date: document.getElementById('deliveryDate').value,
+                status: document.getElementById('deliveryStatus').value
+            };
+            deliveries.push(newDelivery);
+            localStorage.setItem('deliveries', JSON.stringify(deliveries));
+            renderDeliveryTable();
+            this.reset();
+        });
+
+        function deleteDelivery(id) {
+            if (confirm('Are you sure you want to delete this delivery?')) {
+                deliveries = deliveries.filter(delivery => delivery.id !== id);
+                localStorage.setItem('deliveries', JSON.stringify(deliveries));
+                renderDeliveryTable();
+            }
+        }
+
+        function editDelivery(id) {
+            const delivery = deliveries.find(d => d.id === id);
+            document.getElementById('deliveryAddress').value = delivery.address;
+            document.getElementById('deliveryDate').value = delivery.date;
+            document.getElementById('deliveryStatus').value = delivery.status;
+            deliveries = deliveries.filter(d => d.id !== id);
+            localStorage.setItem('deliveries', JSON.stringify(deliveries));
+            renderDeliveryTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderDeliveryTable);
+    </script>
+</body>
+
+</html>

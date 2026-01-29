@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
+    <!--FontAwesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"
+        integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+
+    <!--Chartjs CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+    <!--ApexCharts CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!--Custome CSS-->
+    <link rel="stylesheet" href="./style.css">
+    <title>My Inventory</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Dancing+Script&display=swap');
+
+        body {
+            background: #232526 !important;
+            color: #fff;
+        }
+
+        .navbar-info,
+        .bg-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+        }
+
+        .navbar .nav-link,
+        .navbar-brand {
+            color: #fff !important;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar-brand:hover {
+            color: #ffd6fa !important;
+        }
+
+        .card,
+        .card.my-card {
+            background: #232526 !important;
+            border-radius: 18px;
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            /* Gradient shadow for dashboard cards */
+            box-shadow: 0 4px 24px 0 rgba(123, 47, 242, 0.25), 0 0 24px 4px #f357a8;
+        }
+
+        .card.my-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            /* White gradient shadow on hover */
+            box-shadow:
+                0 12px 48px 0 rgba(255, 255, 255, 0.25),
+                0 0 32px 8px rgba(255, 255, 255, 0.35);
+        }
+
+        .bg-white {
+            background: #fff !important;
+            border-radius: 18px;
+            /* Smaller gradient radius for shadow */
+            box-shadow: 0 2px 6px rgba(123, 47, 242, 0.13), 0 0 6px 1px #f357a87a;
+            color: #232526 !important;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .bg-white:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow:
+                0 4px 12px 0 rgba(123, 47, 242, 0.18),
+                0 0 10px 2px #f357a87a;
+            background: #fff !important;
+            color: #232526 !important;
+        }
+
+        .card-header.bg-info {
+            background: #232526 !important;
+            color: #fff !important;
+            border-radius: 18px 18px 0 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 80px;
+            font-family: 'Dancing Script', cursive;
+            /* Apply Dancing Script font */
+            letter-spacing: 1px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        /* Align cards inside statistics box properly */
+        .card.statistics-card .card-body .row {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .card.statistics-card .card-body .row>div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .card.statistics-card .my-card {
+            width: 100%;
+            min-width: 180px;
+            max-width: 220px;
+            margin: 0 auto 1rem auto;
+        }
+
+        .text-info {
+            color: #f357a8 !important;
+        }
+
+        .btn-info {
+            background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%) !important;
+            border: none;
+            color: #fff;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(90deg, #f357a8 0%, #7b2ff2 100%) !important;
+            color: #ffd6fa;
+        }
+
+        h4,
+        h3 {
+            color: #fff !important;
+        }
+
+        .fas,
+        .fa {
+            color: #f357a8;
+        }
+
+        marquee h3 {
+            color: #7b2ff2;
+        }
+
+        /* Statistics card (col-md-8) hover shadow */
+        .card.statistics-card {
+            background: #232526 !important;
+            border-radius: 18px;
+            color: #fff !important;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow:
+                0 4px 16px 0 rgba(0, 0, 0, 0.35),
+                0 0 16px 4px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .card.statistics-card .card-body .row>div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card.statistics-card h4,
+        .card.statistics-card h3 {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .confirmation-card {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .confirmation-card h2 {
+            color: #4CAF50;
+            margin-bottom: 16px;
+        }
+
+        .confirmation-card p {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .confirmation-card .success-icon {
+            font-size: 48px;
+            color: #4CAF50;
+            margin-bottom: 16px;
+        }
+
+        .delivery-card {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .delivery-card h2 {
+            color: #2196F3;
+            margin-bottom: 16px;
+        }
+
+        .delivery-card p {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .delivery-card a.button {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 24px;
+            background: #4CAF50;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .delivery-card a.button:hover {
+            background: #388E3C;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-info bg-info">
+        <div class="container">
+            <a class="navbar-brand text-white" href="index.html">My Inventory</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" href="index.html">Dashboard <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" href="profile.html">Admin Profile <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Logout</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <!--End Navbar-->
+
+    <!--Topside-->
+    <div class="container">
+        <div class="row mt-4 justify-content-center">
+            <div class="col-md-8">
+                <div class="card statistics-card">
+                    <div class="card-header bg-info text-white">
+                        Statistics
+                    </div>
+                    <div class="card-body">
+                        <div class="row justify-content-center">
+                            <!-- Staff Card -->
+                            <div class="col-md-4">
+                                <a class="text-decoration-none text-dark" href="staff.html">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Staff <i class="fas fa-users"></i></h4>
+
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Products Card -->
+                            <div class="col-md-4">
+                                <a class="text-decoration-none text-dark" href="product.html">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Products <i class="fas fa-box"></i></h4>
+
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Orders Card -->
+                            <div class="col-md-4">
+                                <a class="text-decoration-none text-dark" href="order.html">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Orders <i class="fas fa-shipping-fast"></i></h4>
+
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center mt-3">
+                            <!-- Delivery Card -->
+                            <div class="col-md-4">
+                                <a class="text-decoration-none text-dark d-block" href="delivery_route_map.html">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Delivery <i class="fas fa-route"></i></h4>
+                                        <h3><i class="fas fa-map-marked-alt"></i></h3>
+                                        <span class="text-info">View Delivery Routes</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="text-center my-4">
+                                <button id="placeOrderBtn" class="btn btn-info" disabled>Place Order & Confirm</button>
+                                <div id="orderMsg" style="margin-top: 10px; color: #ffd700;"></div>
+                            </div>
+
+
+                        </div>
+                        <!-- Inside the statistics-card div, replace the existing delivery card section with this: -->
+                        <div class="row justify-content-center mt-3">
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Topside-->
+
+    <!--Graphs-->
+    <div class="container">
+        <div class="row my-5">
+            <!-- First Bar Graph -->
+            <div class="col-md-6">
+                <div class="bg-white p-3">
+                    <h4 class="text-center">Product Sales - Last Month</h4>
+                    <canvas id="productsChart1" width="400" height="300"></canvas>
+                    <script>
+                        // Initialize as blank
+                        var ctx1 = document.getElementById('productsChart1').getContext('2d');
+                        var productsChart1 = new Chart(ctx1, {
+                            type: 'bar',
+                            data: {
+                                labels: [],
+                                datasets: [{
+                                    label: 'Last Month',
+                                    data: [],
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.7)',
+                                        'rgba(54, 162, 235, 0.7)',
+                                        'rgba(255, 206, 86, 0.7)',
+                                        'rgba(75, 192, 192, 0.7)',
+                                        'rgba(153, 102, 255, 0.7)',
+                                        'rgba(255, 159, 64, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                        window.productsChart1 = productsChart1;
+                    </script>
+                </div>
+            </div>
+
+            <!-- Second Bar Graph -->
+            <div class="col-md-6">
+                <div class="bg-white p-3">
+                    <h4 class="text-center">Product Sales - Current Month</h4>
+                    <canvas id="productsChart2" width="400" height="300"></canvas>
+                    <script>
+                        // Initialize as blank
+                        var ctx2 = document.getElementById('productsChart2').getContext('2d');
+                        var productsChart2 = new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: [],
+                                datasets: [{
+                                    label: 'Current Month',
+                                    data: [],
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.7)',
+                                        'rgba(54, 162, 235, 0.7)',
+                                        'rgba(255, 206, 86, 0.7)',
+                                        'rgba(75, 192, 192, 0.7)',
+                                        'rgba(153, 102, 255, 0.7)',
+                                        'rgba(255, 159, 64, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                        window.productsChart2 = productsChart2;
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Align Profit & Expenses and Sales Data horizontally -->
+        <div class="row my-5">
+            <!-- Pie Chart for Profit and Expenses -->
+            <div class="col-md-6">
+                <div class="bg-white p-3">
+                    <h4 class="text-center">Profit & Expenses</h4>
+                    <canvas id="financeChart" width="400" height="300"></canvas>
+                    <script>
+                        // Optionally, also blank for pie chart if needed
+                        var ctx3 = document.getElementById('financeChart').getContext('2d');
+                        var financeChart = new Chart(ctx3, {
+                            type: 'pie',
+                            data: {
+                                labels: [],
+                                datasets: [{
+                                    data: [],
+                                    backgroundColor: [
+                                        'rgba(75, 192, 192, 0.7)',
+                                        'rgba(255, 99, 132, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(255, 99, 132, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return context.label + ': ' + context.raw + '%';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        window.financeChart = financeChart;
+                    </script>
+                </div>
+            </div>
+            <!-- ApexCharts Bar Graph -->
+            <div class="col-md-6">
+                <div class="bg-white p-3">
+                    <h4 class="text-center">Sales Data</h4>
+                    <div id="chart"></div>
+                    <script>
+                        // Initialize as blank
+                        var options = {
+                            chart: { type: 'bar', height: 300 },
+                            series: [{ name: 'Sales', data: [] }],
+                            xaxis: { categories: [] }
+                        };
+                        var chart = new ApexCharts(document.querySelector("#chart"), options);
+                        chart.render();
+                        window.chart = chart;
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Graphs-->
+
+    <!-- Place this where you want the button to appear -->
+    <a href="delivery_route_map.html" class="btn btn-info">Go to Delivery Route Map</a>
+
+    <!-- Delivery Confirmation Card (initially hidden) -->
+    <div class="delivery-card" id="deliveryConfirmationCard" style="display:none;">
+        <h2>Delivery Scheduled!</h2>
+        <p>Your delivery has been successfully scheduled.</p>
+        <p>Order ID: <span id="orderId"></span></p>
+        <p>Delivery Date & Time: <span id="deliveryDateTime"></span></p>
+        <a href="index.html" class="button">Back to Dashboard</a>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    -->
+
+    <script>
+        // Fetch statistics from backend and update graphs
+        function updateDashboardGraphs() {
+            fetch('http://127.0.0.1:5000/api/statistics')
+                .then(res => res.json())
+                .then(data => {
+                    const labels = Object.keys(data.orders_per_product);
+                    const values = Object.values(data.orders_per_product);
+
+                    // Only update if there is data
+                    if (labels.length > 0) {
+                        if (window.productsChart1) {
+                            window.productsChart1.data.labels = labels;
+                            window.productsChart1.data.datasets[0].data = values;
+                            window.productsChart1.update();
+                        }
+                        if (window.productsChart2) {
+                            window.productsChart2.data.labels = labels;
+                            window.productsChart2.data.datasets[0].data = values;
+                            window.productsChart2.update();
+                        }
+                        if (window.chart) {
+                            window.chart.updateOptions({
+                                xaxis: { categories: labels },
+                                series: [{ name: 'Sales', data: values }]
+                            });
+                        }
+                    }
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initial update
+            updateDashboardGraphs();
+        });
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ready = urlParams.get("ready");
+
+    const placeOrderBtn = document.getElementById("placeOrderBtn");
+    const msgBox = document.getElementById("orderMsg");
+
+    // Enable the button only if ?ready=true
+    if (ready === "true") {
+        placeOrderBtn.disabled = false;
+    } else {
+        placeOrderBtn.disabled = true;
+        msgBox.innerHTML = `Please <a href="order.html" style="color: #ffd700;">place an order</a> to enable delivery confirmation.`;
+        return;
+    }
+
+    // Proceed to set the event listener only if enabled
+    placeOrderBtn.addEventListener("click", function () {
+        msgBox.textContent = "";
+
+        fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ product: "Laptop", quantity: 1 }) // You can replace this with dynamic data
+        })
+            .then(res => res.json())
+            .then(data => {
+                const code = data.verification_code || data.delivery?.verification_code;
+                if (code) {
+                    window.location.href = `/delivery_confirmation.html?id=${code}`;
+                } else {
+                    alert("Verification code missing.");
+                }
+            })
+            .catch(err => {
+                console.error("Order placement failed:", err);
+                msgBox.textContent = "Order failed. Try again.";
+            });
+    });
+});
+
+    </script>
+
+</body>
+
+</html>
